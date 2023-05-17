@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Map;
 
 public class Main {
     private static final double BYTES_PER_KiB = 1024;
@@ -23,8 +24,7 @@ public class Main {
             if (files.containsKey(file)) {
                 activeFile = files.get(file);
             } else if (mapContainsSubFile(files, file)) {
-                // TODO: finish this
-                activeFile = files.get(file);
+                activeFile = getContainedSubFile(files, file);
             } else {
                 activeFile = FSFactory.createFileSize(file);
                 files.put(file, activeFile);
@@ -40,8 +40,27 @@ public class Main {
         } while (!askQuit(sc));
     }
 
-    private static boolean mapContainsSubFile(HashMap<File, FileSize> filesMap, File file) {
+    private static boolean mapContainsSubFile(Map<File, FileSize> filesMap, File file) {
+        for (File key : filesMap.keySet()) {
+            FileSize current = filesMap.get(key);
+            if (current instanceof DirectorySize && ((DirectorySize) current).contains(file)) {
+                return true;
+            }
+        }
         return false;
+    }
+
+    private static FileSize getContainedSubFile(Map<File, FileSize> filesMap, File file) {
+        for (File key : filesMap.keySet()) {
+            FileSize current = filesMap.get(key);
+            if (current instanceof DirectorySize) {
+                DirectorySize currentDir = (DirectorySize) current;
+                if (currentDir.contains(file)) {
+                    return currentDir.getContained(file);
+                }
+            }
+        }
+        return null;
     }
 
     private static boolean askPick(Scanner sc, FileSize file) {

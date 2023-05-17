@@ -46,11 +46,40 @@ public class DirectorySize extends AbstractFileSize implements Iterable<FileSize
         if (other instanceof FileSize) {
             otherFile = ((FileSize) other).getFile();
         } else {
-            otherFile = (File) file;
+            otherFile = (File) other;
         }
-        return otherFile.toPath().startsWith(this.getPath());
+        return otherFile.getPath().startsWith(this.getPath());
     }
 
+    /**
+     * Get a FileSize contained by this DirectorySize
+     * 
+     * @param file the File that matches the FileSize contained in this
+     *             Directory
+     * @return the FileSize that matches the File contained in this Directory
+     */
+    public FileSize getContained(File file) {
+        if (!this.contains(file)) {
+            throw new IllegalArgumentException("file is not contained in this directory");
+        }
+        for (FileSize sub : this) {
+            if (sub.getFile().equals(file)) {
+                return sub;
+            } else if (sub instanceof DirectorySize) {
+                DirectorySize subDir = (DirectorySize) sub;
+                if (subDir.contains(file)) {
+                    return subDir.getContained(file);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Create an Iterator over this Directory's sub files
+     * 
+     * @return Iterator over the files contained in this directory
+     */
     public Iterator<FileSize> iterator() {
         return containedFiles.iterator();
     }
