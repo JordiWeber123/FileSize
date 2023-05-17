@@ -1,0 +1,4 @@
+What I want to be able to do with a FileSize object: 
+    *Get any sub-file (great-great-grandchild) seamlessly
+    *Go back and forth between calculated FileSize objects
+What if I put everything in a Map
