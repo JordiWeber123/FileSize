@@ -9,11 +9,6 @@ public class FileFileSize extends AbstractFileSize {
      * @param file the file
      */
     public FileFileSize(File file) {
-        this(file, null);
-    }
-
-    public FileFileSize(File file, FileSize parent) {
-        this.parent = parent;
         this.file = file;
         this.size = file.length();
     }

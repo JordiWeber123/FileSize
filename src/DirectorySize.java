@@ -6,15 +6,10 @@ import java.util.TreeSet;
 public class DirectorySize extends AbstractFileSize implements Iterable<FileSize> {
     private Set<FileSize> containedFiles;
 
-    public DirectorySize(File file, FileSize parent) {
+    public DirectorySize(File file) {
         this.file = file;
-        this.parent = parent;
         containedFiles = new TreeSet<>();
         processSizeAndContained();
-    }
-
-    public DirectorySize(File file) {
-        this(file, null);
     }
 
     /**
@@ -30,7 +25,7 @@ public class DirectorySize extends AbstractFileSize implements Iterable<FileSize
         if (subFiles != null) {
             FileSizeFactory FSFactory = new FileSizeFactory();
             for (File subFile : subFiles) {
-                FileSize subFileSize = FSFactory.createFileSize(subFile, this);
+                FileSize subFileSize = FSFactory.createFileSize(subFile);
                 size += subFileSize.getSize();
                 containedFiles.add(subFileSize);
             }

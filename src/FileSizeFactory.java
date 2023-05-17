@@ -18,11 +18,4 @@ public class FileSizeFactory {
         }
         return new FileFileSize(file);
     }
-
-    public FileSize createFileSize(File file, FileSize parent) {
-        if (file.isDirectory()) {
-            return new DirectorySize(file, parent);
-        }
-        return new FileFileSize(file, parent);
-    }
 }

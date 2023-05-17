@@ -1,7 +1,6 @@
 import java.io.File;
 
 public abstract class AbstractFileSize implements FileSize {
-    protected FileSize parent;
     protected File file;
     protected long size;
 
@@ -84,7 +83,7 @@ public abstract class AbstractFileSize implements FileSize {
      */
     public int compareTo(FileSize other) {
         int sizeComp = Long.compare(other.getSize(), this.getSize());
-        if(sizeComp != 0){
+        if (sizeComp != 0) {
             return sizeComp;
         }
         return this.getPath().compareTo(other.getPath());
