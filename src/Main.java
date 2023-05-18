@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.Map;
 
 public class Main {
@@ -11,6 +12,7 @@ public class Main {
     // TODO: efficiency
     // TODO: check efficiency, maybe use recursive backtracking to work the way I
     // TODO: want it to?
+    // TODO: or if recursion causes problems, use a Stack?
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Limit size: " + Long.MAX_VALUE + " bytes or "
                 + Long.MAX_VALUE / BYTES_PER_KiB / BYTES_PER_KiB / BYTES_PER_KiB / BYTES_PER_KiB + " TiB");
@@ -21,6 +23,7 @@ public class Main {
             String fileName = getFileName(sc);
             File file = new File(fileName);
             FileSize activeFile;
+            Stack<FileSize> parents = new Stack<>();
             if (files.containsKey(file)) {
                 activeFile = files.get(file);
             } else if (mapContainsSubFile(files, file)) {
@@ -31,7 +34,7 @@ public class Main {
             }
             do {
                 if (activeFile.isDirectory()) {
-                    activeFile = showMenuOptions(sc, activeFile);
+                    activeFile = showMenuOptions(sc, activeFile, parents);
                 } else {
                     System.out.println("Displaying information for: " + activeFile.getName());
                     displayBytes(activeFile.getSize());
@@ -135,16 +138,18 @@ public class Main {
         }
     }
 
-    private static FileSize showMenuOptions(Scanner sc, FileSize file) {
+    private static FileSize showMenuOptions(Scanner sc, FileSize file, Stack<FileSize> parents) {
         final String SHOW_SIZE = "1";
         final String SHOW_DIRECTORY = "2";
         final String SHOW_SUBFILE = "3";
-        final String RETURN = "4";
+        final String PREVIOUS = "4";
+        final String RETURN = "5";
         System.out.println("Pick an option");
         System.out.println("1. Show the size of the current directory");
         System.out.println("2. Show the full directory");
         System.out.println("3. Show the size of a sub file");
-        System.out.println("4. Pick return");
+        System.out.println("4. Go back to the previous file. (must be inside a subfile)");
+        System.out.println("5. Pick return");
         System.out.println("q to quit");
         String choice = sc.nextLine().substring(0, 1);
         switch (choice) {
@@ -155,8 +160,12 @@ public class Main {
                 displayDirectory(file);
                 break;
             case SHOW_SUBFILE:
-                file = pickSubFile(sc, file);
+                file = pickSubFile(sc, file, parents);
                 break;
+            case PREVIOUS:
+                if (!parents.isEmpty()) {
+                    file = parents.pop();
+                }
             case RETURN:
                 break;
             case "q":
@@ -165,12 +174,13 @@ public class Main {
         return file;
     }
 
-    private static FileSize pickSubFile(Scanner sc, FileSize file) {
+    private static FileSize pickSubFile(Scanner sc, FileSize file, Stack<FileSize> parents) {
         DirectorySize dir = (DirectorySize) file;
         System.out.println("Type the name of the subfile: ");
         String name = sc.nextLine();
         for (FileSize subFile : dir) {
             if (subFile.getName().equals(name)) {
+                parents.add(file);
                 return subFile;
             }
         }
@@ -180,10 +190,10 @@ public class Main {
             name = sc.nextLine();
             for (FileSize subFile : dir) {
                 if (subFile.getName().equals(name)) {
+                    parents.add(file);
                     return subFile;
                 }
             }
         }
     }
-
 }
