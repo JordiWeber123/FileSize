@@ -148,7 +148,7 @@ public class Main {
         System.out.println("1. Show the size of the current directory");
         System.out.println("2. Show the full directory");
         System.out.println("3. Show the size of a sub file");
-        System.out.println("4. Go back to the previous file. (must be inside a subfile)");
+        System.out.println("4. Go back to the previous file. (must be inside a sub-file)");
         System.out.println("5. Pick return");
         System.out.println("q to quit");
         String choice = sc.nextLine().substring(0, 1);
@@ -165,6 +165,8 @@ public class Main {
             case PREVIOUS:
                 if (!parents.isEmpty()) {
                     file = parents.pop();
+                } else {
+                    System.out.println("not inside a sub-file");
                 }
             case RETURN:
                 break;
