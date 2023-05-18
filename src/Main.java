@@ -8,11 +8,6 @@ import java.util.Map;
 public class Main {
     private static final double BYTES_PER_KiB = 1024;
 
-    // TODO: make user experience better
-    // TODO: efficiency
-    // TODO: check efficiency, maybe use recursive backtracking to work the way I
-    // TODO: want it to?
-    // TODO: or if recursion causes problems, use a Stack?
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Limit size: " + Long.MAX_VALUE + " bytes or "
                 + Long.MAX_VALUE / BYTES_PER_KiB / BYTES_PER_KiB / BYTES_PER_KiB / BYTES_PER_KiB + " TiB");
