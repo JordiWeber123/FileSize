@@ -19,15 +19,18 @@ public class Main {
             File file = new File(fileName);
             FileSize activeFile;
             Stack<FileSize> parents = new Stack<>();
+            // Check if file has been processed already
             if (files.containsKey(file)) {
                 activeFile = files.get(file);
             } else if (mapContainsSubFile(files, file)) {
                 activeFile = getContainedSubFile(files, file);
             } else {
+                // If it hasn't, create a FileSize object from it and add it to the map
                 activeFile = FSFactory.createFileSize(file);
                 files.put(file, activeFile);
             }
             do {
+                // Display the information for a File
                 if (activeFile.isDirectory()) {
                     activeFile = showMenuOptions(sc, activeFile, parents);
                 } else {
@@ -38,6 +41,14 @@ public class Main {
         } while (!askQuit(sc));
     }
 
+    /**
+     * Check if the map or any directories within it contains the given file
+     * 
+     * @param filesMap Map of Files and their corresponding FileSize objects
+     * @param file     The File to search for
+     * @return true if the file is contained within the map or any directories
+     *         inside it, false otherwise
+     */
     private static boolean mapContainsSubFile(Map<File, FileSize> filesMap, File file) {
         for (File key : filesMap.keySet()) {
             FileSize current = filesMap.get(key);
@@ -48,11 +59,18 @@ public class Main {
         return false;
     }
 
+    /**
+     * Returns a FileSize object present inside a directory
+     * 
+     * @param filesMap Map of the current directory's Files to FileSize objects
+     * @param file     The file to search for
+     * @return FileSize object that is being searched. Null if not found
+     */
     private static FileSize getContainedSubFile(Map<File, FileSize> filesMap, File file) {
         for (File key : filesMap.keySet()) {
-            FileSize current = filesMap.get(key);
-            if (current instanceof DirectorySize) {
-                DirectorySize currentDir = (DirectorySize) current;
+            FileSize currentFile = filesMap.get(key);
+            if (currentFile instanceof DirectorySize) {
+                DirectorySize currentDir = (DirectorySize) currentFile;
                 if (currentDir.contains(file)) {
                     return currentDir.getContained(file);
                 }
@@ -61,6 +79,12 @@ public class Main {
         return null;
     }
 
+    /**
+     * Prompts the user to pick a file
+     * 
+     * @param sc   Scanner connected to System.in
+     * @param file A FileSize object of the current file
+     */
     private static boolean askPick(Scanner sc, FileSize file) {
         System.out.println("The current file is: " + file.getName());
         System.out.println("Do you wish to pick another file?");
@@ -133,6 +157,17 @@ public class Main {
         }
     }
 
+    /**
+     * Shows the options for an active file and allows the user to pick an action
+     * 
+     * @param sc      Scanner connected to System.in
+     * @param file    The active file
+     * @param parents A stack with the file's parents
+     * @return file object depending on the action taken. If the show sub file
+     *         option is picked, the returned file is the chosen sub file, if the
+     *         previous option is picked the file is the file's parent directory, in
+     *         any other case return the given active file
+     */
     private static FileSize showMenuOptions(Scanner sc, FileSize file, Stack<FileSize> parents) {
         final String SHOW_SIZE = "1";
         final String SHOW_DIRECTORY = "2";
@@ -144,7 +179,7 @@ public class Main {
         System.out.println("2. Show the full directory");
         System.out.println("3. Show the size of a sub file");
         System.out.println("4. Go back to the previous file. (must be inside a sub-file)");
-        System.out.println("5. Pick return");
+        System.out.println("5. Return");
         System.out.println("q to quit");
         String choice = sc.nextLine().substring(0, 1);
         switch (choice) {
@@ -171,7 +206,21 @@ public class Main {
         return file;
     }
 
+    /**
+     * Prompts the user to pick a sub file of a directory
+     * 
+     * 
+     * @param sc      Scanner connected to System.in
+     * @param file    FileSize object of the file to look for subfiles
+     * @param parents A stack of the file's parents. Modified to add the given file
+     *                in the case a sub file is found
+     * @return a FileSize object of the sub file. If given file is not a directory,
+     *         return file back
+     */
     private static FileSize pickSubFile(Scanner sc, FileSize file, Stack<FileSize> parents) {
+        if (!file.isDirectory()) {
+            return file;
+        }
         DirectorySize dir = (DirectorySize) file;
         System.out.println("Type the name of the subfile: ");
         String name = sc.nextLine();
